@@ -63,7 +63,6 @@ model = BertForSequenceClassification.from_pretrained(
     output_attentions=False,  # Whether the model returns attentions weights.
     output_hidden_states=False,  # Whether the model returns all hidden-states.
 )
-model.cpu()
 
 optimizer = AdamW(model.parameters(),
                   lr=5e-5,  # args.learning_rate - default is 5e-5, our notebook had 2e-5
@@ -76,7 +75,7 @@ scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_training_steps=total_steps)
 
 trainer = Trainer(model, optimizer, scheduler,
-                  train_dataloader, val_dataloader, epochs)
+                  train_dataloader, val_dataloader, epochs, device="cpu")
 
 trainer.train()
 

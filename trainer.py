@@ -19,7 +19,7 @@ class IterResult:
         return report
 
 class Trainer:
-    def __init__(self, model, optimzer, scheduler, train_dl, val_dl, epochs=1):
+    def __init__(self, model, optimzer, scheduler, train_dl, val_dl, epochs=1, device='cpu'):
         self.model = model
         self.optimzer = optimzer
         self.scheduler = scheduler
@@ -27,6 +27,9 @@ class Trainer:
         self.val_dl = val_dl
         self.epochs = epochs
         self.total_steps = len(train_dl) * self.epochs
+        self.device = device
+
+        getattr(model, device)() # e.g. model.cpu()
 
     def train(self):
         training_stats = []
@@ -71,9 +74,9 @@ class Trainer:
         iter_result = IterResult(len(tdl))
 
         for step, batch in tqdm(enumerate(tdl), total=len(tdl)):
-            b_input_ids = batch[0].to('cpu')
-            b_input_mask = batch[1].to('cpu')
-            b_labels = batch[2].to('cpu')
+            b_input_ids = batch[0].to(self.device)
+            b_input_mask = batch[1].to(self.device)
+            b_labels = batch[2].to(self.device)
 
             m.zero_grad()
             outputs = m(b_input_ids,
@@ -106,9 +109,9 @@ class Trainer:
         iter_result = IterResult(len(vdl))
 
         for batch in vdl:
-            b_input_ids = batch[0].to('cpu')
-            b_input_mask = batch[1].to('cpu')
-            b_labels = batch[2].to('cpu')
+            b_input_ids = batch[0].to(self.device)
+            b_input_mask = batch[1].to(self.device)
+            b_labels = batch[2].to(self.device)
 
             with torch.no_grad():
                 outputs = m(b_input_ids,
