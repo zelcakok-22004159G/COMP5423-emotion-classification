@@ -15,6 +15,7 @@ from torch.optim import AdamW
 from utils import split_tensor_datasets, get_training_dataset_loader, get_validate_dataset_loader
 from training_kit import TrainingKit
 from trainer import Trainer
+from data_preprocessor import DataProcessor
 
 def debug_params(model):
     params = list(model.named_parameters())
@@ -35,9 +36,11 @@ def debug_params(model):
 epochs = 3
 batch_size = 5
 rows_per_batch = 50
+columns = ["Sentence", "Emotion"]
 
 # Prepare the datasets
-df = pd.read_csv('data/train_data.txt', header=0, names=["Sentence", "Emotion"], sep=";")
+df = pd.read_csv('data/train_data.txt', header=0, names=columns, sep=";")
+df = DataProcessor().process(df, columns)
 
 # Init the training kit
 training_kit = TrainingKit(
