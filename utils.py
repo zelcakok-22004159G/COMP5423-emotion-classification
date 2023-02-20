@@ -6,7 +6,7 @@ from torch.utils.data import TensorDataset, random_split, DataLoader, RandomSamp
 def flat_accuracy(preds, labels):
     pred_flat = np.argmax(preds, axis=1).flatten()
     labels_flat = labels.flatten()
-    print("Test", pred_flat, pred_flat == labels_flat)
+    print("Test", pred_flat, labels_flat, pred_flat == labels_flat)
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 

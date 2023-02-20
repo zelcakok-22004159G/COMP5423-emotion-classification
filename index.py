@@ -9,7 +9,7 @@ torch.manual_seed(seed_val)
 torch.cuda.manual_seed(seed_val)
 
 import pandas as pd
-from transformers import BertForSequenceClassification, get_linear_schedule_with_warmup
+from transformers import BertForSequenceClassification, get_linear_schedule_with_warmup, BertConfig
 from torch.optim import AdamW
 
 from utils import split_tensor_datasets, get_training_dataset_loader, get_validate_dataset_loader
@@ -37,13 +37,13 @@ batch_size = 5
 rows_per_batch = 50
 
 # Prepare the datasets
-df = pd.read_csv('BBC News Train.csv', header=0)
+df = pd.read_csv('data/train_data.txt', header=0, names=["Sentence", "Emotion"], sep=";")
 
 # Init the training kit
 training_kit = TrainingKit(
     df, 
-    feat_col_name="Category", 
-    data_col_name="Text", 
+    feat_col_name="Emotion", 
+    data_col_name="Sentence", 
     row_size=batch_size * rows_per_batch,
 )
 
@@ -63,7 +63,7 @@ model = BertForSequenceClassification.from_pretrained(
 model.cpu()
 
 optimizer = AdamW(model.parameters(),
-                  lr=2e-5,  # args.learning_rate - default is 5e-5, our notebook had 2e-5
+                  lr=5e-5,  # args.learning_rate - default is 5e-5, our notebook had 2e-5
                   eps=1e-8  # args.adam_epsilon  - default is 1e-8.
                   )
 

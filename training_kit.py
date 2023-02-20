@@ -7,10 +7,14 @@ from gensim.parsing.preprocessing import remove_stopwords
 
 class TrainingKit:
     def __init__(self, df: pd.DataFrame, feat_col_name: str, data_col_name: str, row_size=50, **kwargs):
-        self.row_size = row_size
-        self.feats = getattr(df, feat_col_name)[:row_size]
-        self.data = getattr(df, data_col_name)[:row_size]
-        self.features = set(self.feats)
+        self.feat_col_name = feat_col_name
+        self.data_col_name = data_col_name
+
+        samples, features = self.__random_sampling(df, row_size)
+        self.feats = getattr(samples, feat_col_name)
+        self.data =  getattr(samples, data_col_name)
+
+        self.features = features
         self.label2id = {label: id for id, label in enumerate(self.features)}
         self.labels = torch.tensor(
             [self.label2id[label] for label in self.feats]
@@ -27,6 +31,24 @@ class TrainingKit:
     def process_line(self, line):
         return ' '.join(np.random.permutation(remove_stopwords(line).split())[:100])
     
+    def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
+        buff = {}
+        features = df[self.feat_col_name].unique()
+        for row in df.to_numpy().tolist():
+            [_, feat] = row
+            if not buff.get(feat):
+                buff[feat] = []
+            if len(buff[feat]) >= sampling_size:
+                continue         
+            buff[feat].append(row)
+
+        samples = []
+        for feat in features:
+            for row in buff[feat]:
+                samples.append(row)
+        samples = np.random.permutation(samples)
+        return pd.DataFrame(samples, columns=[self.data_col_name, self.feat_col_name]), features
+
     def __compute(self):
         tokenizer = self.tokenizer.from_pretrained('bert-base-uncased')
         input_ids, attention_masks = [], []
