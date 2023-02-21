@@ -15,7 +15,6 @@ class DataProcessor:
 
     def __process_words(self, words):
         buff = []
-        words = remove_stopwords(words)
         for word in self.tokenizer.tokenize(words):            
             word = self.lemma.lemmatize(word)
             word = self.stemmer.stem(word)
