@@ -17,21 +17,6 @@ from training_kit import TrainingKit
 from trainer import Trainer
 from data_preprocessor import DataProcessor
 
-def debug_params(model):
-    params = list(model.named_parameters())
-    print('The BERT model has {:} different named parameters.\n'.format(
-        len(params)))
-    print('==== Embedding Layer ====\n')
-    for p in params[0:5]:
-        print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-    print('\n==== First Transformer ====\n')
-    for p in params[5:21]:
-        print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-    print('\n==== Output Layer ====\n')
-    for p in params[-4:]:
-        print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-
-
 # Configs
 epochs = 3
 batch_size = 5
@@ -39,19 +24,30 @@ rows_per_batch = 50
 columns = ["Sentence", "Emotion"]
 
 # Prepare the datasets
-df = pd.read_csv('data/train_data.txt', header=0, names=columns, sep=";")
-df = DataProcessor().process(df, columns)
+train_df = pd.read_csv('data/train_data.txt', header=0, names=columns, sep=";")
+train_df = DataProcessor().process(train_df, columns)
+
+val_df = pd.read_csv('data/val_data.txt', header=0, names=columns, sep=";")
+val_df = DataProcessor().process(val_df, columns)
 
 # Init the training kit
 training_kit = TrainingKit(
-    df, 
+    train_df, 
     feat_col_name="Emotion", 
     data_col_name="Sentence", 
     row_size=batch_size * rows_per_batch,
 )
 
-tensor_ds = training_kit.get_tensor_dataset()
-train_ds, val_ds = split_tensor_datasets(tensor_ds, ratio=0.7)
+# Init the validation kit
+val_kit = TrainingKit(
+    val_df,
+    feat_col_name="Emotion", 
+    data_col_name="Sentence", 
+    row_size=min(batch_size * rows_per_batch, val_df.size),
+)
+
+train_ds = training_kit.get_tensor_dataset()
+val_ds = val_kit.get_tensor_dataset()
 
 train_dataloader = get_training_dataset_loader(train_ds, batch_size=batch_size)
 val_dataloader = get_validate_dataset_loader(val_ds, batch_size=batch_size)
