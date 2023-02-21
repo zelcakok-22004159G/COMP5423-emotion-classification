@@ -5,7 +5,7 @@ from nltk.stem.snowball import EnglishStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
 
-nltk.download("wordnet")
+# nltk.download("wordnet")
 
 class DataProcessor:
     def __init__(self):
@@ -13,7 +13,7 @@ class DataProcessor:
         self.lemma = WordNetLemmatizer()
         self.tokenizer = RegexpTokenizer(r"\w+")
 
-    def __process_words(self, words):
+    def process_words(self, words):
         buff = []
         for word in self.tokenizer.tokenize(words):            
             word = self.lemma.lemmatize(word)
@@ -24,6 +24,6 @@ class DataProcessor:
     def process(self, lines, columns):        
         buff = []
         for [words, feat] in lines.to_numpy().tolist():
-            words = self.__process_words(words)
+            words = self.process_words(words)
             buff.append([words, feat])
         return pd.DataFrame(buff, columns=columns)

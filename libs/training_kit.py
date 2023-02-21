@@ -30,7 +30,7 @@ class TrainingKit:
         return BertTokenizer.from_pretrained('bert-base-uncased')
 
     def process_line(self, line):
-        return ' '.join(np.random.permutation(remove_stopwords(line).split())[:500])
+        return ' '.join(np.random.permutation(line.split())[:500])
 
     def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
         buff = {}
