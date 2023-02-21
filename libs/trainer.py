@@ -1,4 +1,7 @@
 import time
+import os
+import shutil
+from json import dumps
 
 import torch
 from tqdm import tqdm
@@ -33,7 +36,8 @@ class Trainer:
         getattr(model, device)() # e.g. model.cpu()
 
     def train(self):
-        training_stats = []
+        if os.path.exists("staging"):
+            shutil.rmtree("staging")
 
         for epoch_i in range(0, self.epochs):
             print("")
@@ -54,16 +58,20 @@ class Trainer:
             print("  Validation Loss: {0:.2f}".format(val_report["avg_loss"]))
             print("  Validation took: {:}".format(val_report["time_used"]))
 
-            training_stats.append(
-                {
-                    'epoch': epoch_i + 1,
-                    'Training Loss': train_report["avg_loss"],
-                    'Valid. Loss': val_report["avg_loss"],
-                    'Valid. Accur.': val_report["avg_accy"],
-                    'Training Time': train_report["time_used"],
-                    'Validation Time': val_report["time_used"]
-                }
-            )
+            stats = {
+                'epoch': epoch_i + 1,
+                'Training Loss': train_report["avg_loss"],
+                'Valid. Loss': val_report["avg_loss"],
+                'Valid. Accur.': val_report["avg_accy"],
+                'Training Time': train_report["time_used"],
+                'Validation Time': val_report["time_used"]
+            }
+            if epoch_i >= 1:
+                self.model.save_pretrained(f"staging/stage-{epoch_i}")
+                print(dumps(stats, indent=4))
+                with open(f"staging/stage-{epoch_i}-state.json", "w") as f:
+                    f.write(dumps(stats, indent=4))
+
 
     def nn_fnb_propagation(self, start):
         o = self.optimzer
@@ -123,7 +131,8 @@ class Trainer:
                             attention_mask=b_input_mask,
                             labels=b_labels
                             )
-                loss, logits = outputs.loss, outputs.logits
+                logits = outputs.logits
+                loss = self.criterion(logits, b_labels)
 
             eval_loss += loss.item()
             logits = logits.detach().cpu().numpy()
