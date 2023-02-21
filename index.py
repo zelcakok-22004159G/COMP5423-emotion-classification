@@ -19,8 +19,8 @@ from data_preprocessor import DataProcessor
 
 # Configs
 epochs = 3
-batch_size = 5
-rows_per_batch = 50
+batch_size = 1
+rows_per_batch = 5
 columns = ["Sentence", "Emotion"]
 
 # Prepare the datasets

@@ -3,10 +3,11 @@ from datetime import timedelta
 from torch.utils.data import TensorDataset, random_split, DataLoader, RandomSampler, SequentialSampler
 
 
-def flat_accuracy(preds, labels):
+def flat_accuracy(preds, labels, verbose=False):
     pred_flat = np.argmax(preds, axis=1).flatten()
     labels_flat = labels.flatten()
-    print("Test", pred_flat, labels_flat, pred_flat == labels_flat)
+    if verbose:
+        print("> ", pred_flat, labels_flat, pred_flat == labels_flat)
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 
