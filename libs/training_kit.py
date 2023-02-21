@@ -1,9 +1,10 @@
-import torch
-from transformers import BertTokenizer
-import pandas as pd
-from torch.utils.data import TensorDataset
 import numpy as np
+import pandas as pd
+import torch
 from gensim.parsing.preprocessing import remove_stopwords
+from torch.utils.data import TensorDataset
+from transformers import BertTokenizer
+
 
 class TrainingKit:
     def __init__(self, df: pd.DataFrame, feat_col_name: str, data_col_name: str, row_size=50, **kwargs):
@@ -12,7 +13,7 @@ class TrainingKit:
 
         samples, features = self.__random_sampling(df, row_size)
         self.feats = getattr(samples, feat_col_name)
-        self.data =  getattr(samples, data_col_name)
+        self.data = getattr(samples, data_col_name)
 
         self.features = features
         self.label2id = {label: id for id, label in enumerate(self.features)}
@@ -27,10 +28,10 @@ class TrainingKit:
         if self.options.get("tokenizer"):
             return self.options.get("tokenizer")
         return BertTokenizer.from_pretrained('bert-base-uncased')
-    
+
     def process_line(self, line):
         return ' '.join(np.random.permutation(remove_stopwords(line).split())[:500])
-    
+
     def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
         buff = {}
         features = df[self.feat_col_name].unique()
@@ -39,7 +40,7 @@ class TrainingKit:
             if not buff.get(feat):
                 buff[feat] = []
             if len(buff[feat]) >= sampling_size:
-                continue         
+                continue
             buff[feat].append(row)
 
         samples = []
@@ -55,11 +56,11 @@ class TrainingKit:
         for line in self.data:
             encoded_dict = tokenizer.encode_plus(
                 self.process_line(line),
-                add_special_tokens = True, # Add '[CLS]' and '[SEP]'
-                max_length = 502,           # Pad & truncate all sentences.
-                pad_to_max_length = True,
-                return_attention_mask = True,   # Construct attn. masks.
-                return_tensors = 'pt',     # Return pytorch tensors.
+                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
+                max_length=502,           # Pad & truncate all sentences.
+                pad_to_max_length=True,
+                return_attention_mask=True,   # Construct attn. masks.
+                return_tensors='pt',     # Return pytorch tensors.
             )
             input_ids.append(encoded_dict['input_ids'])
             attention_masks.append(encoded_dict['attention_mask'])

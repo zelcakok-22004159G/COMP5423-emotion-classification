@@ -12,23 +12,23 @@ import pandas as pd
 from transformers import BertForSequenceClassification, get_linear_schedule_with_warmup, BertConfig
 from torch.optim import AdamW
 
-from utils import split_tensor_datasets, get_training_dataset_loader, get_validate_dataset_loader
-from training_kit import TrainingKit
-from trainer import Trainer
-from data_preprocessor import DataProcessor
+from libs.utils import split_tensor_datasets, get_training_dataset_loader, get_validate_dataset_loader
+from libs.training_kit import TrainingKit
+from libs.trainer import Trainer
+from libs.data_preprocessor import DataProcessor
 
 # Configs
-epochs = 3
+epochs = 1
 batch_size = 1
-rows_per_batch = 5
+rows_per_batch = 1
 columns = ["Sentence", "Emotion"]
 
 # Prepare the datasets
 train_df = pd.read_csv('data/train_data.txt', header=0, names=columns, sep=";")
-train_df = DataProcessor().process(train_df, columns)
-
 val_df = pd.read_csv('data/val_data.txt', header=0, names=columns, sep=";")
-val_df = DataProcessor().process(val_df, columns)
+
+train_df = pd.concat([train_df, val_df])
+train_df = DataProcessor().process(train_df, columns)
 
 # Init the training kit
 training_kit = TrainingKit(
@@ -38,16 +38,8 @@ training_kit = TrainingKit(
     row_size=batch_size * rows_per_batch,
 )
 
-# Init the validation kit
-val_kit = TrainingKit(
-    val_df,
-    feat_col_name="Emotion", 
-    data_col_name="Sentence", 
-    row_size=min(batch_size * rows_per_batch, val_df.size),
-)
-
-train_ds = training_kit.get_tensor_dataset()
-val_ds = val_kit.get_tensor_dataset()
+train_df = training_kit.get_tensor_dataset()
+train_ds, val_ds = split_tensor_datasets(train_df)
 
 train_dataloader = get_training_dataset_loader(train_ds, batch_size=batch_size)
 val_dataloader = get_validate_dataset_loader(val_ds, batch_size=batch_size)

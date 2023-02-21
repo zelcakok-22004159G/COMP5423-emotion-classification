@@ -3,8 +3,7 @@ import time
 import torch
 from tqdm import tqdm
 
-from utils import flat_accuracy, format_time
-
+from libs.utils import flat_accuracy, format_time
 
 
 class IterResult:

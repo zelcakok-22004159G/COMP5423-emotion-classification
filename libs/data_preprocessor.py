@@ -1,6 +1,6 @@
+import nltk
 import pandas as pd
 from gensim.parsing import remove_stopwords
-import nltk
 from nltk.stem.snowball import EnglishStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer

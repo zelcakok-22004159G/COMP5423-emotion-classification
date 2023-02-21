@@ -28,4 +28,3 @@ def get_training_dataset_loader(ds: TensorDataset, batch_size=4):
 
 def get_validate_dataset_loader(ds: TensorDataset, batch_size=4):
     return DataLoader(ds, sampler=SequentialSampler(ds), batch_size=batch_size, num_workers=1)
-
