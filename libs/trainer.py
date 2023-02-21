@@ -96,7 +96,7 @@ class Trainer:
             o.step()
             s.step()
 
-            if step and step % 4 == 0:
+            if step and step % 100 == 0:
                 m.eval()
                 val_report = self.nn_validation(verbose=False)
                 print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
