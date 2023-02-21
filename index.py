@@ -68,3 +68,4 @@ trainer = Trainer(model, optimizer, scheduler,
 trainer.train()
 
 model.save_pretrained("model")
+training_kit.save("model")

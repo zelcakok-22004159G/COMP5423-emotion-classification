@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import torch
-from gensim.parsing.preprocessing import remove_stopwords
+from json import dumps
+
 from torch.utils.data import TensorDataset
 from transformers import BertTokenizer
 
@@ -29,12 +30,12 @@ class TrainingKit:
             return self.options.get("tokenizer")
         return BertTokenizer.from_pretrained('bert-base-uncased')
 
-    def process_line(self, line):
+    def shuffle_rows(self, line):
         return ' '.join(np.random.permutation(line.split())[:500])
 
     def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
         buff = {}
-        features = df[self.feat_col_name].unique()
+        features = sorted(df[self.feat_col_name].unique())
         for row in df.to_numpy().tolist():
             [_, feat] = row
             if not buff.get(feat):
@@ -55,7 +56,7 @@ class TrainingKit:
         input_ids, attention_masks = [], []
         for line in self.data:
             encoded_dict = tokenizer.encode_plus(
-                self.process_line(line),
+                self.shuffle_rows(line),
                 add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
                 max_length=502,           # Pad & truncate all sentences.
                 pad_to_max_length=True,
@@ -71,3 +72,11 @@ class TrainingKit:
 
     def get_tensor_dataset(self):
         return TensorDataset(self.input_ids, self.attention_masks, self.labels)
+    
+    def save(self, folder):
+        config = {
+            "features": self.features,
+            "label2id": self.label2id
+        }
+        with open(f"{folder}/training-kit.config", "w") as f:
+            f.write(dumps(config, indent=4))
