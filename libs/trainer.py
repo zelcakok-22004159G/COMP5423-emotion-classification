@@ -18,7 +18,7 @@ class IterResult:
         return report
 
 class Trainer:
-    def __init__(self, model, optimzer, scheduler, train_dl, val_dl, epochs=1, device='cpu'):
+    def __init__(self, model, optimzer, scheduler, train_dl, val_dl, weights, epochs=1, device='cpu'):
         self.model = model
         self.optimzer = optimzer
         self.scheduler = scheduler
@@ -28,6 +28,8 @@ class Trainer:
         self.total_steps = len(train_dl) * self.epochs
         self.device = device
 
+        weights = torch.FloatTensor(weights).to(self.device)
+        self.criterion = torch.nn.CrossEntropyLoss(weight=weights,reduction='mean')
         getattr(model, device)() # e.g. model.cpu()
 
     def train(self):
@@ -44,24 +46,24 @@ class Trainer:
                 train_report["avg_loss"]))
             print("  Training epcoh took: {:}".format(
                 train_report["time_used"]))
-            # print("\r\n", "Running validation...")
-            # self.model.eval()
+            print("\r\n", "Running validation...")
+            self.model.eval()
 
-            # val_report = self.nn_validation()
-            # print("  Accuracy: {0:.2f}".format(val_report["avg_accy"]))
-            # print("  Validation Loss: {0:.2f}".format(val_report["avg_loss"]))
-            # print("  Validation took: {:}".format(val_report["time_used"]))
+            val_report = self.nn_validation(verbose=True)
+            print("  Accuracy: {0:.2f}".format(val_report["avg_accy"]))
+            print("  Validation Loss: {0:.2f}".format(val_report["avg_loss"]))
+            print("  Validation took: {:}".format(val_report["time_used"]))
 
-            # training_stats.append(
-            #     {
-            #         'epoch': epoch_i + 1,
-            #         'Training Loss': train_report["avg_loss"],
-            #         'Valid. Loss': val_report["avg_loss"],
-            #         'Valid. Accur.': val_report["avg_accy"],
-            #         'Training Time': train_report["time_used"],
-            #         'Validation Time': val_report["time_used"]
-            #     }
-            # )
+            training_stats.append(
+                {
+                    'epoch': epoch_i + 1,
+                    'Training Loss': train_report["avg_loss"],
+                    'Valid. Loss': val_report["avg_loss"],
+                    'Valid. Accur.': val_report["avg_accy"],
+                    'Training Time': train_report["time_used"],
+                    'Validation Time': val_report["time_used"]
+                }
+            )
 
     def nn_fnb_propagation(self, start):
         o = self.optimzer
@@ -78,12 +80,15 @@ class Trainer:
             b_labels = batch[2].to(self.device)
 
             m.zero_grad()
+            o.zero_grad()
             outputs = m(b_input_ids,
                         token_type_ids=None,
                         attention_mask=b_input_mask,
                         labels=b_labels)
-            loss = outputs.loss
+
             logits = outputs.logits
+            loss = self.criterion(logits, b_labels)
+
             propagation_loss = propagation_loss + loss.item()
             loss.backward()
 
@@ -91,11 +96,11 @@ class Trainer:
             o.step()
             s.step()
 
-            # if step and step % 4 == 0:
-            #     m.eval()
-            #     val_report = self.nn_validation()
-            #     print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
-            #     m.train()
+            if step and step % 4 == 0:
+                m.eval()
+                val_report = self.nn_validation(verbose=False)
+                print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
+                m.train()
 
         return iter_result.mark(avg_loss=propagation_loss)
 

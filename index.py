@@ -17,6 +17,18 @@ from libs.training_kit import TrainingKit
 from libs.trainer import Trainer
 from libs.data_preprocessor import DataProcessor
 
+def get_class_weight(df, feat_col_name):
+    buff = {}
+    total = 0
+    features = sorted(df[feat_col_name].unique())
+    rows = df.groupby(df[feat_col_name], sort=True).size().reset_index(feat_col_name).to_numpy().tolist()
+    for [emotion, count] in rows:
+        total += count
+    for [emotion, count] in rows:
+        buff[emotion] = 1 - (count / total)
+    weights = [ buff[emotion] for emotion in features ]
+    return torch.FloatTensor(weights).cpu()
+
 # Configs
 epochs = 1
 batch_size = 1
@@ -24,10 +36,11 @@ rows_per_batch = 1
 columns = ["Sentence", "Emotion"]
 
 # Prepare the datasets
-train_df = pd.read_csv('data/train_data.txt', header=0, names=columns, sep=";")
-val_df = pd.read_csv('data/val_data.txt', header=0, names=columns, sep=";")
+train_df = pd.read_csv('data/train_data.txt', names=columns, sep=";")
+val_df = pd.read_csv('data/val_data.txt', names=columns, sep=";")
 
 train_df = pd.concat([train_df, val_df])
+cls_weights = get_class_weight(train_df, columns[1])
 train_df = DataProcessor().process(train_df, columns)
 
 # Init the training kit
@@ -63,7 +76,7 @@ scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_training_steps=total_steps)
 
 trainer = Trainer(model, optimizer, scheduler,
-                  train_dataloader, val_dataloader, epochs, device="cpu")
+                  train_dataloader, val_dataloader, cls_weights, epochs, device="cpu")
 
 trainer.train()
 

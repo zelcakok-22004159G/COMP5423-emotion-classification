@@ -29,14 +29,12 @@ class TrainingKit:
         if self.options.get("tokenizer"):
             return self.options.get("tokenizer")
         return BertTokenizer.from_pretrained('bert-base-uncased')
-
-    def shuffle_rows(self, line):
-        return ' '.join(np.random.permutation(line.split())[:100])
-
+    
     def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
         buff = {}
         features = sorted(df[self.feat_col_name].unique())
-        for row in df.to_numpy().tolist():
+        shuffled = np.random.permutation(df.to_numpy().tolist())
+        for row in shuffled:
             [_, feat] = row
             if not buff.get(feat):
                 buff[feat] = []
@@ -56,12 +54,12 @@ class TrainingKit:
         input_ids, attention_masks = [], []
         for line in self.data:
             encoded_dict = tokenizer.encode_plus(
-                self.shuffle_rows(line),
-                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                max_length=102,           # Pad & truncate all sentences.
+                ' '.join(line.split()[:300]),
+                add_special_tokens=True,
+                max_length=302,
                 pad_to_max_length=True,
-                return_attention_mask=True,   # Construct attn. masks.
-                return_tensors='pt',     # Return pytorch tensors.
+                return_attention_mask=True,
+                return_tensors='pt',
             )
             input_ids.append(encoded_dict['input_ids'])
             attention_masks.append(encoded_dict['attention_mask'])
@@ -72,7 +70,7 @@ class TrainingKit:
 
     def get_tensor_dataset(self):
         return TensorDataset(self.input_ids, self.attention_masks, self.labels)
-    
+
     def save(self, folder):
         config = {
             "features": self.features,
