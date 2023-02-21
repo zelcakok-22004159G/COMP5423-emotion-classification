@@ -31,7 +31,7 @@ class TrainingKit:
         return BertTokenizer.from_pretrained('bert-base-uncased')
 
     def shuffle_rows(self, line):
-        return ' '.join(np.random.permutation(line.split())[:500])
+        return ' '.join(np.random.permutation(line.split())[:100])
 
     def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
         buff = {}
@@ -58,7 +58,7 @@ class TrainingKit:
             encoded_dict = tokenizer.encode_plus(
                 self.shuffle_rows(line),
                 add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                max_length=502,           # Pad & truncate all sentences.
+                max_length=102,           # Pad & truncate all sentences.
                 pad_to_max_length=True,
                 return_attention_mask=True,   # Construct attn. masks.
                 return_tensors='pt',     # Return pytorch tensors.
