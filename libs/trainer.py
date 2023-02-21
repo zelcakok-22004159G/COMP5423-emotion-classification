@@ -91,11 +91,11 @@ class Trainer:
             o.step()
             s.step()
 
-            if step and step % 4 == 0:
-                m.eval()
-                val_report = self.nn_validation()
-                print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
-                m.train()
+            # if step and step % 4 == 0:
+            #     m.eval()
+            #     val_report = self.nn_validation()
+            #     print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
+            #     m.train()
 
         return iter_result.mark(avg_loss=propagation_loss)
 
