@@ -54,9 +54,9 @@ class TrainingKit:
         input_ids, attention_masks = [], []
         for line in self.data:
             encoded_dict = tokenizer.encode_plus(
-                ' '.join(line.split()[:300]),
+                ' '.join(line.split()[:200]),
                 add_special_tokens=True,
-                max_length=302,
+                max_length=202,
                 pad_to_max_length=True,
                 return_attention_mask=True,
                 return_tensors='pt',
