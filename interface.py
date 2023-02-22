@@ -9,7 +9,7 @@ from flask_cors import CORS
 columns = ["Sentence", "Emotion"]
 
 # Prepare features
-features = ['sadness', 'anger', 'love', 'surprise', 'fear', 'joy']
+features = ["anger", "fear", "joy", "love", "sadness", "surprise"]
 label2id = {label: id for id, label in enumerate(features)}
 labels = torch.tensor(
     [label2id[label] for label in features]
@@ -24,30 +24,41 @@ class Interface:
     @classmethod
     def process_line(cls, line):
         return ' '.join(np.random.permutation(line.split())[:500])
-
+    
     @classmethod
     def classify(cls, line):
-        input_ids, attention_masks = [], []
-        encoded_dict = tokenizer.encode_plus(
-            cls.process_line(line),
-            add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-            max_length=502,           # Pad & truncate all sentences.
-            pad_to_max_length=True,
-            return_attention_mask=True,   # Construct attn. masks.
-            return_tensors='pt',     # Return pytorch tensors.
-        )
-        input_ids.append(encoded_dict['input_ids'])
-        attention_masks.append(encoded_dict['attention_mask'])
-        input_ids = torch.cat(input_ids, dim=0)
-        attention_masks = torch.cat(attention_masks, dim=0)
+        inputs = tokenizer(line, return_tensors="pt")
+
         with torch.no_grad():
-            outputs = model(input_ids,
-                            token_type_ids=None,
-                            attention_mask=attention_masks)
-            logits = outputs.logits
-            logits = logits.detach().cpu().numpy()
-            [pred_flat] = np.argmax(logits, axis=1).flatten()
-            return features[pred_flat]
+            logits = model(**inputs).logits
+
+        logits = logits.detach().cpu().numpy()
+        [pred_flat] = np.argmax(logits, axis=1).flatten()
+        return features[pred_flat]
+
+    # @classmethod
+    # def classify(cls, line):
+    #     input_ids, attention_masks = [], []
+    #     encoded_dict = tokenizer.encode_plus(
+    #         cls.process_line(line),
+    #         add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
+    #         max_length=502,           # Pad & truncate all sentences.
+    #         pad_to_max_length=True,
+    #         return_attention_mask=True,   # Construct attn. masks.
+    #         return_tensors='pt',     # Return pytorch tensors.
+    #     )
+    #     input_ids.append(encoded_dict['input_ids'])
+    #     attention_masks.append(encoded_dict['attention_mask'])
+    #     input_ids = torch.cat(input_ids, dim=0)
+    #     attention_masks = torch.cat(attention_masks, dim=0)
+    #     with torch.no_grad():
+    #         outputs = model(input_ids,
+    #                         token_type_ids=None,
+    #                         attention_mask=attention_masks)
+    #         logits = outputs.logits
+    #         logits = logits.detach().cpu().numpy()
+    #         [pred_flat] = np.argmax(logits, axis=1).flatten()
+    #         return features[pred_flat]
 
 app = Flask(__name__)
 CORS(app)
@@ -56,7 +67,7 @@ CORS(app)
 def main():
     return jsonify(status="ready") 
 
-@app.route("/classify")
+@app.route("/api/classify")
 def classify():
     args = request.args
     q = args.get("q")
