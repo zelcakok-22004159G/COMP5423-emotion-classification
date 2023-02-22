@@ -6,3 +6,4 @@ pandas
 gensim
 flask
 flask-cors
+scikit-learn

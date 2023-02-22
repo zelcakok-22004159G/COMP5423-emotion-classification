@@ -26,3 +26,13 @@ class DataProcessor:
             words = self.process_words(words)
             buff.append([words, feat])
         return pd.DataFrame(buff, columns=columns)
+    
+    @classmethod
+    def process_line(cls, line):
+        dp = cls()
+        buff = []
+        for word in dp.tokenizer.tokenize(line):
+            word = dp.lemma.lemmatize(word)
+            word = dp.stemmer.stem(word)
+            buff.append(word)
+        return " ".join(buff)

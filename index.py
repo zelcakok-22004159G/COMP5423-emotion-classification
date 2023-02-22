@@ -36,8 +36,8 @@ rows_per_batch = 1
 columns = ["Sentence", "Emotion"]
 
 # Prepare the datasets
-train_df = pd.read_csv('data/train_data.txt', names=columns, sep=";")
-val_df = pd.read_csv('data/val_data.txt', names=columns, sep=";")
+train_df = pd.read_csv('data/train_data_trimmed.txt', names=columns, sep=";")
+val_df = pd.read_csv('data/val_data_trimmed.txt', names=columns, sep=";")
 
 train_df = pd.concat([train_df, val_df])
 cls_weights = get_class_weight(train_df, columns[1])
