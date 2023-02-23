@@ -21,12 +21,21 @@ import axios from "axios"
 const ENDPOINT = "http://localhost:5000/api"
 
 const EMOTIONS = {
-  "anger": "Angry",
+  "anger": "Anger",
   "fear": "Fear",
   "joy": "Joy",
   "love": "Love",
   "sadness": "Sadness",
   "surprise": "Surprise",
+}
+
+const EMOJIS = {
+  "anger": "😡",
+  "fear": "😨",
+  "joy": "😆",
+  "love": "😍",
+  "sadness": "😢",
+  "surprise": "🤩",
 }
 
 export default {
@@ -41,10 +50,7 @@ export default {
   },
   methods: {
     think() {
-      if (!this.text) {
-
-      }
-      this.emotion = "Thinking..."
+      this.emotion = `Thinking`
       if (this.task) {
         clearTimeout(this.task)
       }
@@ -62,13 +68,15 @@ export default {
   },
   computed: {
     display() {
-      if (this.emotion === "Thinking...") {
-        return "Thinking..."
+      if (this.emotion === `Thinking`) {
+        return `Thinking 🤔`
       }
       else if (!this.text || !this.emotion) {
-        return `[ ${Object.values(EMOTIONS).join(" | ")} ]`;
+        const values = Object.values(EMOTIONS)
+        const emotions = values.map(val=>val = `${val} ${EMOJIS[val.toLowerCase()]}`)
+        return `[ ${emotions.join(" | ")} ]`;
       } else {
-        return EMOTIONS[this.emotion];
+        return `${EMOTIONS[this.emotion]} ${EMOJIS[this.emotion]}`;
       }
     }
   }
@@ -87,7 +95,7 @@ export default {
   margin-top: 160px;
 
   .main {
-    max-width: 600px;
+    max-width: 700px;
     height: 300px;
 
     .flex-box {
@@ -110,7 +118,7 @@ export default {
 }
 
 .scaleOut {
-  animation: scale-out 2s forwards;
+  animation: scale-out 1s forwards;
 }
 
 @keyframes scale-out {

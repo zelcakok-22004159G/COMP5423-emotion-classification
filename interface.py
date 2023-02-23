@@ -16,7 +16,7 @@ labels = torch.tensor(
 )
 
 # Prepare the model
-model = BertForSequenceClassification.from_pretrained("model")
+model = BertForSequenceClassification.from_pretrained("model-v1")
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 
