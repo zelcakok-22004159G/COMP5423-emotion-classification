@@ -129,6 +129,8 @@ dmypy.json
 .pyre/
 
 node_modules/
+model*
 model/
 data/
 staging/
+submission*

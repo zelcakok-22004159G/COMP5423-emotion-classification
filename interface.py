@@ -36,30 +36,6 @@ class Interface:
         [pred_flat] = np.argmax(logits, axis=1).flatten()
         return features[pred_flat]
 
-    # @classmethod
-    # def classify(cls, line):
-    #     input_ids, attention_masks = [], []
-    #     encoded_dict = tokenizer.encode_plus(
-    #         cls.process_line(line),
-    #         add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-    #         max_length=502,           # Pad & truncate all sentences.
-    #         pad_to_max_length=True,
-    #         return_attention_mask=True,   # Construct attn. masks.
-    #         return_tensors='pt',     # Return pytorch tensors.
-    #     )
-    #     input_ids.append(encoded_dict['input_ids'])
-    #     attention_masks.append(encoded_dict['attention_mask'])
-    #     input_ids = torch.cat(input_ids, dim=0)
-    #     attention_masks = torch.cat(attention_masks, dim=0)
-    #     with torch.no_grad():
-    #         outputs = model(input_ids,
-    #                         token_type_ids=None,
-    #                         attention_mask=attention_masks)
-    #         logits = outputs.logits
-    #         logits = logits.detach().cpu().numpy()
-    #         [pred_flat] = np.argmax(logits, axis=1).flatten()
-    #         return features[pred_flat]
-
 app = Flask(__name__)
 CORS(app)
 

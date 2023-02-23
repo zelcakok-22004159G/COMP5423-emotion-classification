@@ -3,8 +3,11 @@
   .main.box.centered.has-text-centered
     .flex-box
       label.subtitle COMP5423 Homework 1 ( Kok Tsz Ho 22004159G )
-      .emoji(:class="{ scaleOut: false, scaleIn: true }")
-        label.title {{ display }}
+      .emoji(:class="{ scaleOut: change, scaleIn: !change }")
+        label.title Guess the emotion
+        br
+        br
+        label.subtitle {{ display }}
       input.input(
         v-model="text", 
         placeholder="Type something here...", 
@@ -17,38 +20,55 @@ import axios from "axios"
 
 const ENDPOINT = "http://localhost:5000/api"
 
+const EMOTIONS = {
+  "anger": "Angry",
+  "fear": "Fear",
+  "joy": "Joy",
+  "love": "Love",
+  "sadness": "Sadness",
+  "surprise": "Surprise",
+}
+
 export default {
   name: 'App',
   data() {
     return {
       text: null,
       emotion: null,
-      task: null
+      task: null,
+      change: false
     }
   },
   methods: {
     think() {
+      if (!this.text) {
+
+      }
+      this.emotion = "Thinking..."
       if (this.task) {
         clearTimeout(this.task)
       }
-      this.emotion = "Thinking..."
       this.task = setTimeout(async () => {
-        console.log("Inputed", this.text);
+        this.change = true;
         const { data } = await axios.get(ENDPOINT + `/classify?q=${this.text}`)
         if (!data || !data?.result) {
           this.emotion = "I don't know..."
         } else {
           this.emotion = `${data.result}`
         }
+        this.change = false;
       }, 500)
     }
   },
   computed: {
     display() {
-      if (!this.emotion) {
-        return "Waiting for text..."
+      if (this.emotion === "Thinking...") {
+        return "Thinking..."
+      }
+      else if (!this.text || !this.emotion) {
+        return `[ ${Object.values(EMOTIONS).join(" | ")} ]`;
       } else {
-        return this.emotion.toUpperCase()
+        return EMOTIONS[this.emotion];
       }
     }
   }
@@ -68,7 +88,7 @@ export default {
 
   .main {
     max-width: 600px;
-    height: 200px;
+    height: 300px;
 
     .flex-box {
       width: 100%;
