@@ -32,9 +32,9 @@ def get_class_weight(df, feat_col_name):
 
 # Configs
 device = "cpu"
-epochs = 1
+epochs = 3
 batch_size = 1
-rows_per_batch = 1
+rows_per_batch = 10
 staging = True
 columns = ["Sentence", "Emotion"]
 
@@ -55,7 +55,7 @@ training_kit = TrainingKit(
 )
 
 train_df = training_kit.get_tensor_dataset()
-train_ds, val_ds = split_tensor_datasets(train_df, ratio=0.89)
+train_ds, val_ds = split_tensor_datasets(train_df, ratio=0.9)
 
 train_dataloader = get_training_dataset_loader(train_ds, batch_size=batch_size)
 val_dataloader = get_validate_dataset_loader(val_ds, batch_size=batch_size)

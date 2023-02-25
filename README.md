@@ -6,8 +6,9 @@
 
 ## Prerequisite
 - NodeJS version >= 12.0.0
+    - Installed the `Yarn` library
 - Python version >= 3.8
-    - venv library
+    - Installed the `venv` library
 - Make sure the following files are located in the `data` folder
     - train_data.txt
     - val_data.txt

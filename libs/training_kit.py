@@ -32,7 +32,7 @@ class TrainingKit:
     
     def get_shuffled_ds(self, df: pd.DataFrame, sampling_size: int):
         features = sorted(df[self.feat_col_name].unique())
-        shuffled = np.random.permutation(df.to_numpy().tolist())
+        shuffled = np.random.permutation(df.to_numpy().tolist()[:sampling_size])
         return pd.DataFrame(shuffled, columns=[self.data_col_name, self.feat_col_name]), features
 
     def __compute(self):
