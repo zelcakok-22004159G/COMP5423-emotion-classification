@@ -11,7 +11,7 @@
 |Category|Filename|Description|
 |--------|--------|-----------|
 |Data Pre-processing|stopwords.py|Generate stopwords from the datasets using TF-IDF
-|Data Pre-processing|preprocess.py|Perform stemming and lemmation on datasets.
+|Data Pre-processing|preprocess.py|Perform stemming and lemmatization on datasets.
 |Training|index.ipynb|Jupyter Notebook for Colab
 |Training|index.py|For local debugging use
 |Evaluation|evaluation.py|Use the trained model to classify the testing dataset and output the submission.csv

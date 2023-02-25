@@ -1,3 +1,7 @@
+'''
+    Filename: interface.py
+    Usage: Provide the API for the web UI
+'''
 from transformers import BertForSequenceClassification
 from transformers import BertTokenizer
 import numpy as np
@@ -36,13 +40,16 @@ class Interface:
         [pred_flat] = np.argmax(logits, axis=1).flatten()
         return features[pred_flat]
 
+# Initialize Flask
 app = Flask(__name__)
 CORS(app)
 
+# Default Endpoint API
 @app.route("/")
 def main():
     return jsonify(status="ready") 
 
+# Classify API
 @app.route("/api/classify")
 def classify():
     args = request.args

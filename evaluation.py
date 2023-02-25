@@ -1,3 +1,7 @@
+'''
+    Filename: evaluation.py
+    Usage: Standalone file to evaluate the model
+'''
 import torch
 import numpy as np
 import pandas as pd
@@ -27,6 +31,7 @@ def classify(line):
 
 df = pd.read_csv("data/test_data.txt", names=["id", "class"])
 
+# Classify the line one by one
 for i in tqdm(range(0, len(df))):
     line = df.at[i, 'id']
     df.at[i, 'class'] = classify(line)

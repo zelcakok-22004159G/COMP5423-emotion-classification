@@ -1,3 +1,7 @@
+'''
+    Filename: utils.py
+    Usage: All the helper functions are put here
+'''
 import numpy as np
 from datetime import timedelta
 from torch.utils.data import TensorDataset, random_split, DataLoader, RandomSampler, SequentialSampler
@@ -9,11 +13,6 @@ def flat_accuracy(preds, labels, verbose=False):
     if verbose:
         print("> ", pred_flat, labels_flat, pred_flat == labels_flat)
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
-
-
-def showPrediction(features, preds):
-    [pred_flat] = np.argmax(preds, axis=1).flatten()
-    return features[pred_flat]
 
 
 def format_time(elapsed):

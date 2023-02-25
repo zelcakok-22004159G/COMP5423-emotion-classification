@@ -1,3 +1,19 @@
+'''
+    Filename: training_kit.py
+    Usage: Centralized the data pre-processing procedures
+
+    Example:
+        # define the params ...
+
+        training_kit = TrainingKit(
+            train_df,
+            feat_col_name="Emotion",
+            data_col_name="Sentence",
+            row_size=batch_size * rows_per_batch,
+        )
+
+        # training start ...
+'''
 import numpy as np
 import pandas as pd
 import torch
@@ -24,17 +40,23 @@ class TrainingKit:
         self.options = kwargs
         self.__compute()
 
+    '''
+        Allow user to specify the tokenizer, 
+        the default tokenizer is the BertTokenizer
+    '''
     @property
     def tokenizer(self):
         if self.options.get("tokenizer"):
             return self.options.get("tokenizer")
         return BertTokenizer.from_pretrained('bert-base-uncased')
     
+    # Return the features and the shuffled dataset
     def get_shuffled_ds(self, df: pd.DataFrame, sampling_size: int):
         features = sorted(df[self.feat_col_name].unique())
         shuffled = np.random.permutation(df.to_numpy().tolist()[:sampling_size])
         return pd.DataFrame(shuffled, columns=[self.data_col_name, self.feat_col_name]), features
 
+    # Use tokenizer to produce the input_ids and attention_masks
     def __compute(self):
         tokenizer = self.tokenizer
         input_ids, attention_masks = [], []
@@ -54,9 +76,11 @@ class TrainingKit:
         self.input_ids = input_ids
         self.attention_masks = attention_masks
 
+    # Simple function to create the tensor dataset
     def get_tensor_dataset(self):
         return TensorDataset(self.input_ids, self.attention_masks, self.labels)
 
+    # Create a config file to describe the training information
     def save(self, folder):
         config = {
             "features": self.features,
