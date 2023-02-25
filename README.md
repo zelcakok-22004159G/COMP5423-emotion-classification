@@ -16,6 +16,7 @@
 |Training|index.py|For local debugging use
 |Evaluation|evaluation.py|Use the trained model to classify the testing dataset and output the submission.csv
 |API Service|interface.py|Flask APIs for web UI integration
+|Web Service|`web` folder|VueJS webpage files
     
 ## Prerequisite
 - NodeJS version >= 12.0.0
