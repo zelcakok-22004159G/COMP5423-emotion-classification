@@ -78,5 +78,5 @@ python -c "import torch; print('Is CUDA supported? ', torch.cuda.is_available())
         - `Local:   http://localhost:8080/`
 - Navigate to <a href="http://localhost:8080">http://localhost:8080</a> and you should see the following screen
 <br>
-<img src="Web-UI.png"/>
+<img src="Web-UI.gif"/>
 
