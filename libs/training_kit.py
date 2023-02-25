@@ -12,7 +12,7 @@ class TrainingKit:
         self.feat_col_name = feat_col_name
         self.data_col_name = data_col_name
 
-        samples, features = self.__random_sampling(df, row_size)
+        samples, features = self.get_shuffled_ds(df, row_size)
         self.feats = getattr(samples, feat_col_name)
         self.data = getattr(samples, data_col_name)
 
@@ -30,33 +30,19 @@ class TrainingKit:
             return self.options.get("tokenizer")
         return BertTokenizer.from_pretrained('bert-base-uncased')
     
-    def __random_sampling(self, df: pd.DataFrame, sampling_size: int):
-        buff = {}
+    def get_shuffled_ds(self, df: pd.DataFrame, sampling_size: int):
         features = sorted(df[self.feat_col_name].unique())
         shuffled = np.random.permutation(df.to_numpy().tolist())
-        for row in shuffled:
-            [_, feat] = row
-            if not buff.get(feat):
-                buff[feat] = []
-            if len(buff[feat]) >= sampling_size:
-                continue
-            buff[feat].append(row)
-
-        samples = []
-        for feat in features:
-            for row in buff[feat]:
-                samples.append(row)
-        samples = np.random.permutation(samples)
-        return pd.DataFrame(samples, columns=[self.data_col_name, self.feat_col_name]), features
+        return pd.DataFrame(shuffled, columns=[self.data_col_name, self.feat_col_name]), features
 
     def __compute(self):
-        tokenizer = self.tokenizer.from_pretrained('bert-base-uncased')
+        tokenizer = self.tokenizer
         input_ids, attention_masks = [], []
         for line in self.data:
             encoded_dict = tokenizer.encode_plus(
-                ' '.join(line.split()[:200]),
+                ' '.join(line.split()[:181]),
                 add_special_tokens=True,
-                max_length=202,
+                max_length=183,
                 pad_to_max_length=True,
                 return_attention_mask=True,
                 return_tensors='pt',

@@ -38,6 +38,7 @@ class Trainer:
     def train(self):
         if os.path.exists("staging"):
             shutil.rmtree("staging")
+        os.makedirs("staging")
 
         for epoch_i in range(0, self.epochs):
             print("")
@@ -53,7 +54,7 @@ class Trainer:
             print("\r\n", "Running validation...")
             self.model.eval()
 
-            val_report = self.nn_validation(verbose=True)
+            val_report = self.nn_validation(verbose=False)
             print("  Accuracy: {0:.2f}".format(val_report["avg_accy"]))
             print("  Validation Loss: {0:.2f}".format(val_report["avg_loss"]))
             print("  Validation took: {:}".format(val_report["time_used"]))
@@ -66,11 +67,10 @@ class Trainer:
                 'Training Time': train_report["time_used"],
                 'Validation Time': val_report["time_used"]
             }
-            if epoch_i >= 1:
-                self.model.save_pretrained(f"staging/stage-{epoch_i}")
-                print(dumps(stats, indent=4))
-                with open(f"staging/stage-{epoch_i}-state.json", "w") as f:
-                    f.write(dumps(stats, indent=4))
+            print(dumps(stats, indent=4))
+            self.model.save_pretrained(f"staging/stage-{epoch_i+1}")
+            with open(f"staging/stage-{epoch_i+1}/state.json", "w") as f:
+                f.write(dumps(stats, indent=4))
 
 
     def nn_fnb_propagation(self, start):
@@ -104,11 +104,11 @@ class Trainer:
             o.step()
             s.step()
 
-            if step and step % 100 == 0:
-                m.eval()
-                val_report = self.nn_validation(verbose=False)
-                print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
-                m.train()
+            # if step and step % 100 == 0:
+            #     m.eval()
+            #     val_report = self.nn_validation(verbose=False)
+            #     print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
+            #     m.train()
 
         return iter_result.mark(avg_loss=propagation_loss)
 
