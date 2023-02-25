@@ -4,40 +4,19 @@
 - Kok Tsz Ho Zelca
 - 22004159G
 
-## Project Structure
-```
-├── evaluation.py
-├── index.ipynb
-├── index.py
-├── interface.py
-├── libs
-│   ├── data_preprocessor.py
-│   ├── __init__.py
-│   ├── trainer.py
-│   ├── training_kit.py
-│   └── utils.py
-├── preprocess.py
-├── README.md
-├── requirements.txt
-├── stopwords.py
-├── web
-│   ├── babel.config.js
-│   ├── jsconfig.json
-│   ├── package.json
-│   ├── public
-│   │   ├── favicon.ico
-│   │   ├── index.html
-│   │   └── robots.txt
-│   ├── README.md
-│   ├── src
-│   │   ├── App.vue
-│   │   ├── main.js
-│   │   └── registerServiceWorker.js
-│   ├── vue.config.js
-│   └── yarn.lock
-└── Web-UI.gif
-```
+## Project Repository
+- Please visit <a href="https://github.com/zelcakok-22004159G/COMP5423-emotion-classification">https://github.com/zelcakok-22004159G/COMP5423-emotion-classification</a> for viewing the readme.
 
+## Project Structure
+|Category|Filename|Description|
+|--------|--------|-----------|
+|Data Pre-processing|stopwords.py|Generate stopwords from the datasets using TF-IDF
+|Data Pre-processing|preprocess.py|Perform stemming and lemmation on datasets.
+|Training|index.ipynb|Jupyter Notebook for Colab
+|Training|index.py|For local debugging use
+|Evaluation|evaluation.py|Use the trained model to classify the testing dataset and output the submission.csv
+|API Service|interface.py|Flask APIs for web UI integration
+    
 ## Prerequisite
 - NodeJS version >= 12.0.0
     - Installed the `Yarn` library
