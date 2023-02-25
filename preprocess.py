@@ -12,12 +12,9 @@ from transformers import BertTokenizer
 nltk.download('stopwords')
 nltk.download('punkt')
 
-# custom_words = pd.read_csv("data/custom_stopwords.txt", header=None).to_numpy().flatten().tolist()
-custom_words = ['feel', 'humili', 'didnt', 'im', 'littl', 'bit', 'like', 'would']
-keep_words = ['not']
+custom_words = pd.read_csv("data/stopwords.txt", header=None).to_numpy().flatten().tolist()
 
-english_words = np.array(stopwords.words('english') + custom_words)
-ignore_words = np.setdiff1d(english_words, keep_words)
+ignore_words = np.array(stopwords.words('english') + custom_words)
 
 dp = DataProcessor()
 
@@ -68,7 +65,3 @@ stats = process_training_file("data/val_data_trimmed.txt",
                                                 "data/val_data_trimmed.txt")
 
 print("Validate", dumps(stats, indent=4))
-
-
-shutil.copyfile("data/test_data.txt", "data/test_data_trimmed.txt")
-process_test_file("data/test_data_trimmed.txt", "data/test_data_trimmed.txt")
