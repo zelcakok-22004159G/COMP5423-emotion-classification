@@ -20,8 +20,9 @@ class IterResult:
         report["time_used"] = format_time(time.time() - self.start)
         return report
 
+
 class Trainer:
-    def __init__(self, model, optimzer, scheduler, train_dl, val_dl, weights, epochs=1, device='cpu'):
+    def __init__(self, model, optimzer, scheduler, train_dl, val_dl, weights, epochs=1, device='cpu', staging=False):
         self.model = model
         self.optimzer = optimzer
         self.scheduler = scheduler
@@ -30,10 +31,12 @@ class Trainer:
         self.epochs = epochs
         self.total_steps = len(train_dl) * self.epochs
         self.device = device
+        self.staging = staging
 
         weights = torch.FloatTensor(weights).to(self.device)
-        self.criterion = torch.nn.CrossEntropyLoss(weight=weights,reduction='mean')
-        getattr(model, device)() # e.g. model.cpu()
+        self.criterion = torch.nn.CrossEntropyLoss(
+            weight=weights, reduction='mean')
+        getattr(model, device)()  # e.g. model.cpu()
 
     def train(self):
         if os.path.exists("staging"):
@@ -72,7 +75,6 @@ class Trainer:
             with open(f"staging/stage-{epoch_i+1}/state.json", "w") as f:
                 f.write(dumps(stats, indent=4))
 
-
     def nn_fnb_propagation(self, start):
         o = self.optimzer
         s = self.scheduler
@@ -104,11 +106,11 @@ class Trainer:
             o.step()
             s.step()
 
-            # if step and step % 100 == 0:
-            #     m.eval()
-            #     val_report = self.nn_validation(verbose=False)
-            #     print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
-            #     m.train()
+            if self.staging and step and step % 100 == 0:
+                m.eval()
+                val_report = self.nn_validation(verbose=False)
+                print("\r\n", " Accuracy: {0:.2f}".format(val_report["avg_accy"]))
+                m.train()
 
         return iter_result.mark(avg_loss=propagation_loss)
 

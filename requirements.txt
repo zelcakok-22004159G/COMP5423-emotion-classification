@@ -7,3 +7,4 @@ gensim
 flask
 flask-cors
 scikit-learn
+nltk

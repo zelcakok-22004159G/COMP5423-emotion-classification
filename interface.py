@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 # Configs
+model_folder = "model"
 columns = ["Sentence", "Emotion"]
 
 # Prepare features
@@ -16,9 +17,8 @@ labels = torch.tensor(
 )
 
 # Prepare the model
-model = BertForSequenceClassification.from_pretrained("model-v1")
+model = BertForSequenceClassification.from_pretrained(model_folder)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
 
 class Interface:
     @classmethod

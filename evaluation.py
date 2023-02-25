@@ -2,17 +2,16 @@ import torch
 import numpy as np
 import pandas as pd
 from transformers import BertTokenizer, BertForSequenceClassification
+from tqdm import tqdm
 
-testing_model = "model-v6-perfect"
+model_folder = "model"
 
 features = ["anger", "fear", "joy", "love", "sadness", "surprise"]
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 model = BertForSequenceClassification.from_pretrained(
-    testing_model,
+    model_folder,
     num_labels=len(features)
 )
-weights = torch.FloatTensor([0.8648, 0.8806, 0.6630, 0.9177, 0.7103, 0.9637]).cpu()
-criterion = torch.nn.CrossEntropyLoss(weight=weights,reduction='mean')
 
 def classify(line):
     inputs = tokenizer(line, return_tensors="pt")
@@ -26,13 +25,12 @@ def classify(line):
     return features[pred_flat]
 
 
-df = pd.read_csv("data/test_data_trimmed.txt", names=["id", "class"])
+df = pd.read_csv("data/test_data.txt", names=["id", "class"])
 
-for i in range(0, len(df)):
+for i in tqdm(range(0, len(df))):
     line = df.at[i, 'id']
     df.at[i, 'class'] = classify(line)
     df.at[i, 'id'] = i
-    print("Processed", line)
 
-df.to_csv(f"submission-{testing_model}.csv", index=False, header=["id", "class"])
+df.to_csv(f"submission-{model_folder}.csv", index=False, header=["id", "class"])
     
