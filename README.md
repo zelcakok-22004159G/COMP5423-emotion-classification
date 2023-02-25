@@ -87,9 +87,14 @@ python -c "import torch; print('Is CUDA supported? ', torch.cuda.is_available())
     - Wait until you see something like 
         - `* Running on http://127.0.0.1:5000`
 - Start the Web server
-    - `cd web & yarn && yarn serve`
-    - Wait until you see something like 
-        - `Local:   http://localhost:8080/`
+    - With NodeJS + Yarn installed
+        - `cd web && yarn && yarn serve`
+        - Wait until you see something like 
+            - `Local:   http://localhost:8080/`
+    - With Docker installed
+        - `cd web && make run` will start the web server
+        - `cd web && make stop` will stop the web server
+        - `cd web && make build` will build image locally, if the network speed is not fast enough.
 - Navigate to <a href="http://localhost:8080">http://localhost:8080</a> and you should see the following screen
 <br>
 <img src="Web-UI.gif"/>
