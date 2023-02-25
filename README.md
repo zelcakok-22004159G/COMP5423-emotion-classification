@@ -1,8 +1,42 @@
 # COMP5423 NLP Homework 1
 
-## Student: 
+## Student Information:  
 - Kok Tsz Ho Zelca
 - 22004159G
+
+## Project Structure
+```
+├── evaluation.py
+├── index.ipynb
+├── index.py
+├── interface.py
+├── libs
+│   ├── data_preprocessor.py
+│   ├── __init__.py
+│   ├── trainer.py
+│   ├── training_kit.py
+│   └── utils.py
+├── preprocess.py
+├── README.md
+├── requirements.txt
+├── stopwords.py
+├── web
+│   ├── babel.config.js
+│   ├── jsconfig.json
+│   ├── package.json
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   └── robots.txt
+│   ├── README.md
+│   ├── src
+│   │   ├── App.vue
+│   │   ├── main.js
+│   │   └── registerServiceWorker.js
+│   ├── vue.config.js
+│   └── yarn.lock
+└── Web-UI.gif
+```
 
 ## Prerequisite
 - NodeJS version >= 12.0.0
