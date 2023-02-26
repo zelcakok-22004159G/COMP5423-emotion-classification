@@ -1,10 +1,3 @@
-from libs.data_preprocessor import DataProcessor
-from libs.trainer import Trainer
-from libs.training_kit import TrainingKit
-from libs.utils import split_tensor_datasets, get_training_dataset_loader, get_validate_dataset_loader
-from torch.optim import AdamW
-from transformers import BertForSequenceClassification, get_linear_schedule_with_warmup, BertConfig
-import pandas as pd
 import random
 import numpy as np
 import torch
@@ -14,6 +7,14 @@ random.seed(seed_val)
 np.random.seed(seed_val)
 torch.manual_seed(seed_val)
 torch.cuda.manual_seed(seed_val)
+
+from libs.data_preprocessor import DataProcessor
+from libs.trainer import Trainer
+from libs.training_kit import TrainingKit
+from libs.utils import split_tensor_datasets, get_training_dataset_loader, get_validate_dataset_loader
+from torch.optim import AdamW
+from transformers import BertForSequenceClassification, get_linear_schedule_with_warmup, BertConfig
+import pandas as pd
 
 
 def get_class_weight(df, feat_col_name):
