@@ -1,3 +1,7 @@
+'''
+    Filename: index.py
+    Usage: For local debugging the training process
+'''
 import random
 import numpy as np
 import torch
